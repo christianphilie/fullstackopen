@@ -7,4 +7,13 @@ const blogSchema = mongoose.Schema({
   likes: Number,
 })
 
+/* Changes every object's _id to id and deletes __v */
+blogSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
 module.exports = mongoose.model('Blog', blogSchema)
