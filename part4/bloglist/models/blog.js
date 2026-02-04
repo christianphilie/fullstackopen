@@ -5,6 +5,10 @@ const blogSchema = mongoose.Schema({
   author: String,
   url: String,
   likes: Number,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 
 /* Changes every object's _id to id and deletes __v */
