@@ -11,12 +11,11 @@ const blogSchema = mongoose.Schema({
   }
 })
 
-/* Changes every object's _id to id and deletes __v */
 blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    returnedObject.id = returnedObject._id.toString() // changes every object's _id to id
+    delete returnedObject._id // removes the _id field
+    delete returnedObject.__v // removes the __v field
   }
 })
 

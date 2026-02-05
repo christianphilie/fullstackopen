@@ -9,8 +9,9 @@
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "NODE_ENV=development node --watch index.js",
-    "test": "NODE_ENV=test node --test",
-    "test:api": "NODE_ENV=test node --test tests/blogs_api.test.js"
+    "test": "NODE_ENV=test node --test --test-concurrency=1",
+    "test:api:blogs": "NODE_ENV=test node --test tests/blogs_api.test.js",
+    "test:api:users": "NODE_ENV=test node --test tests/users_api.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
