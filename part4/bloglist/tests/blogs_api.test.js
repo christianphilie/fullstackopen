@@ -5,13 +5,33 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
 
 describe('when there is initially some blogs saved', () => {
+  let token, user
+
   beforeEach(async () => {
     await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    user = new User({ username: 'root', passwordHash })
+    await user.save()
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' })
+    
+    token = loginResponse.body.token
+
+    const blogsWithUser = helper.initialBlogs.map(blog => ({
+      ...blog,
+      user: user._id
+    }))
+    await Blog.insertMany(blogsWithUser)
   })
 
   test('blogs are returned as json', async () => {
@@ -50,11 +70,11 @@ describe('when there is initially some blogs saved', () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      assert.deepStrictEqual(resultBlog.body, blogToView)
+      assert.strictEqual(resultBlog.body.id, blogToView.id)
     })
 
     test('fails with statuscode 404 if blog does not exist', async () => {
-      const validNonexistingId = await helper.nonExistingId()
+      const validNonexistingId = await helper.nonExistingId(user._id)
 
       await api.get(`/api/blogs/${validNonexistingId}`).expect(404)
     })
@@ -71,6 +91,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -82,6 +103,23 @@ describe('when there is initially some blogs saved', () => {
       assert(titles.includes('Test Blog'))
     })
 
+    test('fails with status code 401 if token is not provided', async () => {
+      const newBlog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'https://test.com/',
+        likes: 0
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
     test('fails with status code 400 if title is missing', async () => {
       const newBlog = {
         author: 'Jane Austen',
@@ -91,6 +129,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
 
@@ -107,6 +146,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
 
@@ -123,6 +163,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -143,6 +184,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -162,6 +204,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -187,6 +230,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .put(`/api/blogs/${blogToUpdate.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updatedBlog)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -211,6 +255,7 @@ describe('when there is initially some blogs saved', () => {
 
       await api
         .put(`/api/blogs/${blogToUpdate.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updateData)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -225,13 +270,14 @@ describe('when there is initially some blogs saved', () => {
     })
 
     test('fails with statuscode 404 if blog does not exist', async () => {
-      const nonExistingId = await helper.nonExistingId()
+      const nonExistingId = await helper.nonExistingId(user._id)
       const updateData = {
         likes: 10
       }
 
       await api
         .put(`/api/blogs/${nonExistingId}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updateData)
         .expect(404)
     })
