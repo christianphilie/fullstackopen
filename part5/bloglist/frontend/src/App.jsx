@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
+
 import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
 import BlogCreateForm from './components/BlogCreateForm'
+
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -88,7 +92,9 @@ const App = () => {
       ) : (
         <>
           <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-          <BlogCreateForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreateBlog={handleCreateBlog} />
+          <Togglable buttonLabel="create new blog">
+            <BlogCreateForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreateBlog={handleCreateBlog} />
+          </Togglable>
           <BlogList blogs={blogs} />
         </>
       )}
