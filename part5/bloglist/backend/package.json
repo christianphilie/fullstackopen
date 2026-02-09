@@ -5,7 +5,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
-    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1"
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
+    "build:ui": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend"
   },
   "author": "",
   "license": "ISC",
