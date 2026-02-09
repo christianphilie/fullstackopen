@@ -29,10 +29,10 @@ const App = () => {
 
   const addBlog = (blog) => {
     blogService.create(blog)
-      .then((blog) => {
-        setBlogs(blogs.concat(blog))  
+      .then((createdBlog) => {
+        setBlogs(blogs.concat(createdBlog))  
         blogFormRef.current.toggleVisibility()
-        notifyWith(`${blog.title} by ${blog.author} created`)
+        notifyWith(`${createdBlog.title} by ${createdBlog.author} created`)
       })
       .catch((error) => {
         console.log('error creating blog', error)
@@ -47,6 +47,22 @@ const App = () => {
     .catch((error) => {
       console.log('error liking blog', error)
       notifyWith('Failed to like blog', true)
+    })
+  }
+
+  const handleDelete = (blog) => {
+    blogService.remove(blog).then(() => {
+      notifyWith(`${blog.title} deleted`)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+    })
+    .catch((error) => {
+      if (error.response.status === 403) {
+        console.log('user not authorized to delete blog', error)
+        notifyWith('You are not authorized to delete this blog', true)
+      } else {
+        console.log('error deleting blog', error)
+        notifyWith('Failed to delete blog', true)
+      }
     })
   }
 
@@ -94,11 +110,11 @@ const App = () => {
         <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
       ) : (
         <>
-          <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+          <p>{user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button></p>
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogCreateForm createBlog={addBlog} />
           </Togglable>
-          <BlogList blogs={blogs} handleLike={handleLike} />
+          <BlogList blogs={blogs} handleLike={handleLike} handleDelete={handleDelete} user={user} />
         </>
       )}
     </>
