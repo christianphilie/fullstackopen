@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 
 import LoginForm from './components/LoginForm'
+import SignupForm from './components/SignupForm'
 import BlogList from './components/BlogList'
 import BlogCreateForm from './components/BlogCreateForm'
 
@@ -15,6 +17,8 @@ const App = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [showSignup, setShowSignup] = useState(false)
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
@@ -85,6 +89,24 @@ const App = () => {
       })
   }
 
+  const handleSignup = (event) => {
+    event.preventDefault()
+    userService
+      .signup(username, name, password)
+      .then(() => {
+        notifyWith('Account created successfully. Please log in.')
+        setShowSignup(false)
+        setUsername('')
+        setName('')
+        setPassword('')
+      })
+      .catch((error) => {
+        console.log('error signing up', error)
+        const errorMessage = error.response?.data?.error || 'Failed to create account'
+        notifyWith(errorMessage, true)
+      })
+  }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBloglistUser')
     setUser(null)
@@ -99,7 +121,9 @@ const App = () => {
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem('loggedInBloglistUser')
     if (loggedInUser) {
-      setUser(JSON.parse(loggedInUser))
+      const user = JSON.parse(loggedInUser)
+      setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -107,7 +131,33 @@ const App = () => {
     <>
       <Notification notification={notification} />
       {user === null ? (
-        <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
+        <>
+          {showSignup ? (
+            <>
+              <SignupForm
+                username={username}
+                name={name}
+                password={password}
+                setUsername={setUsername}
+                setName={setName}
+                setPassword={setPassword}
+                handleSignup={handleSignup}
+              />
+              <button onClick={() => setShowSignup(false)}>back to login</button>
+            </>
+          ) : (
+            <>
+              <LoginForm
+                username={username}
+                password={password}
+                setUsername={setUsername}
+                setPassword={setPassword}
+                handleLogin={handleLogin}
+              />
+              <button onClick={() => setShowSignup(true)}>sign up</button>
+            </>
+          )}
+        </>
       ) : (
         <>
           <p>{user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button></p>
