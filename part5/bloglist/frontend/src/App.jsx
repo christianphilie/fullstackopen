@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,17 +11,14 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-
   const [notification, setNotification] = useState({ message: null })
-
+  
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const blogFormRef = useRef()
+  const [blogs, setBlogs] = useState([])
 
   const notifyWith = (message, isError = false) => {
     setNotification({ message, isError })
@@ -30,16 +27,12 @@ const App = () => {
     }, 5000)
   }
 
-  const handleCreateBlog = (event) => {
-    event.preventDefault()
-    blogService
-      .create({ title, author, url })
+  const addBlog = (blog) => {
+    blogService.create(blog)
       .then((blog) => {
+        setBlogs(blogs.concat(blog))  
+        blogFormRef.current.toggleVisibility()
         notifyWith(`${blog.title} by ${blog.author} created`)
-        setBlogs(blogs.concat(blog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
       })
       .catch((error) => {
         console.log('error creating blog', error)
@@ -92,8 +85,8 @@ const App = () => {
       ) : (
         <>
           <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-          <Togglable buttonLabel="create new blog">
-            <BlogCreateForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreateBlog={handleCreateBlog} />
+          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+            <BlogCreateForm createBlog={addBlog} />
           </Togglable>
           <BlogList blogs={blogs} />
         </>
