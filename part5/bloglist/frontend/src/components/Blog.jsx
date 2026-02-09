@@ -1,7 +1,7 @@
 const Blog = ({ blog }) => (
-  <div>
-    {blog.title} (by {blog.author})
-  </div>  
+  <li key={blog.id}>
+    <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.title}</a> (by {blog.author})
+  </li>  
 )
 
 export default Blog

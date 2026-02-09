@@ -1,6 +1,11 @@
-const LoginForm = ({ username, password, setUsername, setPassword, handleLogin }) => {
+const LoginForm = ({ 
+  username, 
+  password, 
+  setUsername, 
+  setPassword, 
+  handleLogin }) => {
   return (
-    <div>
+    <>
       <h2>log in to application</h2>
       <form onSubmit={handleLogin}>
         <div>
@@ -27,7 +32,7 @@ const LoginForm = ({ username, password, setUsername, setPassword, handleLogin }
         </div>
         <button type="submit">login</button>
       </form>
-    </div>
+    </>
   )
 }
 

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
 import BlogCreateForm from './components/BlogCreateForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+
+  const [notification, setNotification] = useState({ message: null })
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -17,12 +19,19 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const notifyWith = (message, isError = false) => {
+    setNotification({ message, isError })
+    setTimeout(() => {
+      setNotification({ message: null })
+    }, 5000)
+  }
+
   const handleCreateBlog = (event) => {
     event.preventDefault()
     blogService
       .create({ title, author, url })
       .then((blog) => {
-        console.log('blog', blog)
+        notifyWith(`${blog.title} by ${blog.author} created`)
         setBlogs(blogs.concat(blog))
         setTitle('')
         setAuthor('')
@@ -30,6 +39,7 @@ const App = () => {
       })
       .catch((error) => {
         console.log('error creating blog', error)
+        notifyWith('Failed to create blog', true)
       })
   }
 
@@ -39,6 +49,7 @@ const App = () => {
       .login(username, password)
       .then((user) => {
         console.log('user', user)
+        notifyWith(`${user.name} logged in`)
         setUser(user)
         blogService.setToken(user.token)
         window.localStorage.setItem('loggedInBloglistUser', JSON.stringify(user))
@@ -47,6 +58,7 @@ const App = () => {
       })
       .catch((error) => {
         console.log('error logging in', error)
+        notifyWith('Wrong username or password', true)
       })
   }
 
@@ -68,17 +80,20 @@ const App = () => {
     }
   }, [])
 
-  if (user === null) {
-    return <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
-  } else {
-    return (
-      <div>
-        <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-        <BlogCreateForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreateBlog={handleCreateBlog} />
-        <BlogList blogs={blogs} />
-      </div>
-    ) 
-  }
+  return (
+    <>
+      <Notification notification={notification} />
+      {user === null ? (
+        <LoginForm username={username} password={password} setUsername={setUsername} setPassword={setPassword} handleLogin={handleLogin} />
+      ) : (
+        <>
+          <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+          <BlogCreateForm title={title} author={author} url={url} setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} handleCreateBlog={handleCreateBlog} />
+          <BlogList blogs={blogs} />
+        </>
+      )}
+    </>
+  )
 }
 
 export default App
