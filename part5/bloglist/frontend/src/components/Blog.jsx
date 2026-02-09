@@ -26,6 +26,7 @@ const Blog = ({ blog, handleLike }) => {
         author: {blog.author}<br />
         url: <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a><br />
         likes: {blog.likes} <button onClick={onLike}>like</button><br />
+        added by: {blog.user.name}
       </p>
     )}
     </div>

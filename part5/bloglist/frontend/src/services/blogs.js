@@ -25,7 +25,7 @@ const like = (blog) => {
   const config = {
     headers: { Authorization: token }
   }
-  const request = axios.put(`${baseUrl}/${blog.id}`, { ...blog, likes: blog.likes + 1 }, config)
+  const request = axios.post(`${baseUrl}/${blog.id}/like`, config)
   return request.then(response => response.data)
 }
 

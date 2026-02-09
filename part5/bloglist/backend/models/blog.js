@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+
 const blogSchema = mongoose.Schema({
   title: String,
   author: String,
@@ -18,5 +19,9 @@ blogSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
+
+blogSchema.methods.withUser = function() {
+  return this.populate('user', { username: 1, name: 1, id: 1 })
+}
 
 module.exports = mongoose.model('Blog', blogSchema)
