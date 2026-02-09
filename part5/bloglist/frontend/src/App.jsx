@@ -40,6 +40,16 @@ const App = () => {
       })
   }
 
+  const handleLike = (blog) => {
+    blogService.like(blog).then(updatedBlog => {
+      setBlogs(blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
+    })
+    .catch((error) => {
+      console.log('error liking blog', error)
+      notifyWith('Failed to like blog', true)
+    })
+  }
+
   const handleLogin = (event) => {
     event.preventDefault()
     loginService
@@ -88,7 +98,7 @@ const App = () => {
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogCreateForm createBlog={addBlog} />
           </Togglable>
-          <BlogList blogs={blogs} />
+          <BlogList blogs={blogs} handleLike={handleLike} />
         </>
       )}
     </>

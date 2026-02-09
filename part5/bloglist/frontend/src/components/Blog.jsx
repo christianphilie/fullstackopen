@@ -1,10 +1,14 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLike }) => {
   const [expanded, setExpanded] = useState(false)
 
   const toggleExpanded = () => {
     setExpanded(!expanded)
+  }
+
+  const onLike = () => {
+    handleLike(blog)
   }
 
   const blogStyle = {
@@ -21,7 +25,7 @@ const Blog = ({ blog }) => {
       <p>
         author: {blog.author}<br />
         url: <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a><br />
-        likes: {blog.likes} <button>like</button><br />
+        likes: {blog.likes} <button onClick={onLike}>like</button><br />
       </p>
     )}
     </div>
