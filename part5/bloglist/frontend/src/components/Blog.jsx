@@ -1,7 +1,31 @@
-const Blog = ({ blog }) => (
-  <li key={blog.id}>
-    <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.title}</a> (by {blog.author})
-  </li>  
-)
+import { useState } from 'react'
+
+const Blog = ({ blog }) => {
+  const [expanded, setExpanded] = useState(false)
+
+  const toggleExpanded = () => {
+    setExpanded(!expanded)
+  }
+
+  const blogStyle = {
+    padding: 10,
+    border: 'solid 1px',
+    borderRadius: 5,
+    marginBottom: 5
+  }
+
+  return (
+    <div style={blogStyle}>
+      {blog.title} <button onClick={toggleExpanded}>{expanded ? 'hide' : 'view'}</button>
+      {expanded && (
+      <p>
+        author: {blog.author}<br />
+        url: <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a><br />
+        likes: {blog.likes} <button>like</button><br />
+      </p>
+    )}
+    </div>
+  )
+}
 
 export default Blog
