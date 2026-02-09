@@ -12,7 +12,7 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const [notification, setNotification] = useState({ message: null })
-  
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -30,7 +30,7 @@ const App = () => {
   const addBlog = (blog) => {
     blogService.create(blog)
       .then((createdBlog) => {
-        setBlogs(blogs.concat(createdBlog))  
+        setBlogs(blogs.concat(createdBlog))
         blogFormRef.current.toggleVisibility()
         notifyWith(`${createdBlog.title} by ${createdBlog.author} created`)
       })
@@ -44,10 +44,10 @@ const App = () => {
     blogService.like(blog).then(updatedBlog => {
       setBlogs(blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
     })
-    .catch((error) => {
-      console.log('error liking blog', error)
-      notifyWith('Failed to like blog', true)
-    })
+      .catch((error) => {
+        console.log('error liking blog', error)
+        notifyWith('Failed to like blog', true)
+      })
   }
 
   const handleDelete = (blog) => {
@@ -55,15 +55,15 @@ const App = () => {
       notifyWith(`${blog.title} deleted`)
       setBlogs(blogs.filter(b => b.id !== blog.id))
     })
-    .catch((error) => {
-      if (error.response.status === 403) {
-        console.log('user not authorized to delete blog', error)
-        notifyWith('You are not authorized to delete this blog', true)
-      } else {
-        console.log('error deleting blog', error)
-        notifyWith('Failed to delete blog', true)
-      }
-    })
+      .catch((error) => {
+        if (error.response.status === 403) {
+          console.log('user not authorized to delete blog', error)
+          notifyWith('You are not authorized to delete this blog', true)
+        } else {
+          console.log('error deleting blog', error)
+          notifyWith('Failed to delete blog', true)
+        }
+      })
   }
 
   const handleLogin = (event) => {
@@ -93,7 +93,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {

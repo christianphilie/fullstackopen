@@ -1,8 +1,8 @@
-const LoginForm = ({ 
-  username, 
-  password, 
-  setUsername, 
-  setPassword, 
+const LoginForm = ({
+  username,
+  password,
+  setUsername,
+  setPassword,
   handleLogin }) => {
   return (
     <>
