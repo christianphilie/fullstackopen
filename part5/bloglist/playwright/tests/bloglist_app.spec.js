@@ -36,4 +36,25 @@ describe('bloglist app', () => {
       await expect(page.getByText('username or password', { exact: false })).toBeVisible()
     })
   })
+
+  describe('when logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByLabel('username').fill('mluukkai')
+      await page.getByLabel('password').fill('salainen')
+      await page.getByRole('button', { name: 'login' }).click()
+    })
+
+    test('a new blog can be created and is listed in the blog list', async ({ page }) => {
+      await page.getByRole('button', { name: 'create new blog' }).click()
+
+      await page.getByLabel('title').fill('Test Blog')
+      await page.getByLabel('author').fill('Test Author')
+      await page.getByLabel('url').fill('https://test.com')
+      await page.getByRole('button', { name: 'create' }).click()
+
+      const blogListSection = page.getByRole('heading', { name: 'all blogs' }).locator('..')
+      await expect(blogListSection.getByText('Test Blog')).toBeVisible()
+      await expect(blogListSection.getByText(/Test Author/)).toBeVisible()
+    })
+  })
 })
