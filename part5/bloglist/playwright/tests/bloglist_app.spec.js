@@ -1,5 +1,6 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 
+import { loginWith, createBlog } from './helper'
 describe('bloglist app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post('http://localhost:3003/api/testing/reset')
@@ -21,40 +22,43 @@ describe('bloglist app', () => {
 
   describe('login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByLabel('username').fill('mluukkai')
-      await page.getByLabel('password').fill('salainen')
-      
-      await page.getByRole('button', { name: 'login' }).click()
+      await loginWith(page, 'mluukkai', 'salainen')
       await expect(page.getByText('logout')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByLabel('username').fill('wrong')
-      await page.getByLabel('password').fill('wrong')
-
-      await page.getByRole('button', { name: 'login' }).click()
-      await expect(page.getByText('username or password', { exact: false })).toBeVisible()
+      await loginWith(page, 'wrong', 'wrong')
+      const errorDiv = page.locator('.error')
+      await expect(errorDiv).toContainText('username or password')
     })
   })
 
   describe('when logged in', () => {
     beforeEach(async ({ page }) => {
-      await page.getByLabel('username').fill('mluukkai')
-      await page.getByLabel('password').fill('salainen')
-      await page.getByRole('button', { name: 'login' }).click()
+      await loginWith(page, 'mluukkai', 'salainen')
     })
 
     test('a new blog can be created and is listed in the blog list', async ({ page }) => {
-      await page.getByRole('button', { name: 'create new blog' }).click()
-
-      await page.getByLabel('title').fill('Test Blog')
-      await page.getByLabel('author').fill('Test Author')
-      await page.getByLabel('url').fill('https://test.com')
-      await page.getByRole('button', { name: 'create' }).click()
+      await createBlog(page, 'Test Blog', 'Test Author', 'https://test.com')
 
       const blogListSection = page.getByRole('heading', { name: 'all blogs' }).locator('..')
       await expect(blogListSection.getByText('Test Blog')).toBeVisible()
       await expect(blogListSection.getByText(/Test Author/)).toBeVisible()
+    })
+  })
+
+  describe('after a blog is created', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'mluukkai', 'salainen')
+      await createBlog(page, 'Test Blog', 'Test Author', 'https://test.com')
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      const blogElement = page.getByText('Test Blog').locator('..')
+      
+      await blogElement.getByRole('button', { name: 'view' }).click()
+      await blogElement.getByRole('button', { name: 'like' }).click()
+      await expect(blogElement.getByText('likes: 1')).toBeVisible()
     })
   })
 })
