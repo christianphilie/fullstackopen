@@ -3,6 +3,10 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   const mockBlog = {
     title: 'Test Blog',
     author: 'Test Author',
@@ -59,5 +63,41 @@ describe('<Blog />', () => {
     await userEvent.click(likeButton)
 
     expect(defaultProps.handleLike).toHaveBeenCalledTimes(2)
+  })
+
+  test('the delete button is not shown when the blog is not owned by the user', async () => {
+    const user = { id: '456' }
+    render(<Blog {...defaultProps} user={user} />)
+
+    const viewButton = screen.getByText('view')
+    await userEvent.click(viewButton)
+
+    expect(screen.queryByText('delete')).not.toBeInTheDocument()
+  })
+
+  test('the delete handler is called when the delete button is clicked and the user confirms the deletion', async () => {
+    render(<Blog {...defaultProps} />)
+
+    const viewButton = screen.getByText('view')
+    await userEvent.click(viewButton)
+
+    const deleteButton = screen.getByText('delete')
+    window.confirm = vi.fn(() => true)
+    await userEvent.click(deleteButton)
+
+    expect(defaultProps.handleDelete).toHaveBeenCalledWith(mockBlog)
+  })
+
+  test('the delete handler is not called when the delete button is clicked and the user cancels the deletion', async () => {
+    render(<Blog {...defaultProps} />)
+
+    const viewButton = screen.getByText('view')
+    await userEvent.click(viewButton)
+
+    const deleteButton = screen.getByText('delete')
+    window.confirm = vi.fn(() => false)
+    await userEvent.click(deleteButton)
+
+    expect(defaultProps.handleDelete).not.toHaveBeenCalled()
   })
 })
