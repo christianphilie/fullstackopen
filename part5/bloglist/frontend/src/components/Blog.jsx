@@ -30,11 +30,11 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
       {expanded && (
         <>
           <p>
-            <span className="blog-url">url: <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></span><br />
-            <span className="blog-likes">likes: {blog.likes} <button onClick={onLike}>like</button></span><br />
-            <span className="blog-added-by">added by: {blog.user.name} (@{blog.user.username})</span><br />
+            url: <span className="blog-url"><a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></span><br />
+            likes: <span className="blog-likes">{blog.likes} <button className="blog-like-button" onClick={onLike}>like</button></span><br />
+            added by: <span className="blog-added-by">{blog.user.name} (@{blog.user.username})</span><br />
           </p>
-          {blog.user.id === user.id && <button onClick={onDelete}>delete</button>}
+          {blog.user.id === user.id && <button className="blog-delete-button" onClick={onDelete}>delete</button>}
         </>
       )}
     </div>
