@@ -15,6 +15,9 @@ const createBlog = async (page, title, author, url) => {
   await page.getByLabel('author').fill(author)
   await page.getByLabel('url').fill(url)
   await page.getByRole('button', { name: 'create' }).click()
+  
+  const blogListSection = await getBlogListSection(page)
+  await blogListSection.getByText(title).waitFor()
 }
 
 const getBlogListSection = async (page) => {

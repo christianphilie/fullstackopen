@@ -99,4 +99,38 @@ describe('bloglist app', () => {
       await expect(blogElement.getByRole('button', { name: 'delete' })).not.toBeVisible()
     })
   })
+
+  describe('blog ordering by likes', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'mluukkai', 'salainen')
+    })
+
+    test('blogs are arranged by likes with most likes first', async ({ page }) => {
+      test.slow()
+
+      await createBlog(page, 'Blog With No Likes', 'Author A', 'https://a.com')
+      await createBlog(page, 'Blog With Most Likes', 'Author B', 'https://b.com')
+      await createBlog(page, 'Blog With Few Likes', 'Author C', 'https://c.com')
+
+      blogListSection = await getBlogListSection(page)
+
+      const likeBlog = async (title, times) => {
+        const blog = blogListSection.getByText(title).locator('..')
+        await blog.getByRole('button', { name: 'view' }).click()
+        for (let i = 0; i < times; i++) {
+          await blog.getByRole('button', { name: 'like' }).click()
+          await blog.getByText('likes: ' + (i + 1)).waitFor()
+        }
+      }
+
+      await likeBlog('Blog With Most Likes', 3)
+      await likeBlog('Blog With Few Likes', 1)
+      await likeBlog('Blog With No Likes', 0)
+
+      const blogTitles = blogListSection.locator('.blog-title')
+      await expect(blogTitles.nth(0)).toHaveText('Blog With Most Likes')
+      await expect(blogTitles.nth(1)).toHaveText('Blog With Few Likes')
+      await expect(blogTitles.nth(2)).toHaveText('Blog With No Likes')
+    })
+  })
 })

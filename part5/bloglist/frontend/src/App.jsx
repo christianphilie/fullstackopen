@@ -34,7 +34,7 @@ const App = () => {
   const addBlog = (blog) => {
     blogService.create(blog)
       .then((createdBlog) => {
-        setBlogs(blogs.concat(createdBlog))
+        setBlogs(prevBlogs => prevBlogs.concat(createdBlog))
         blogFormRef.current.toggleVisibility()
         notifyWith(`${createdBlog.title} by ${createdBlog.author} created`)
       })
@@ -46,7 +46,7 @@ const App = () => {
 
   const handleLike = (blog) => {
     blogService.like(blog).then(updatedBlog => {
-      setBlogs(blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
+      setBlogs(prevBlogs => prevBlogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
     })
       .catch((error) => {
         console.log('error liking blog', error)
@@ -57,7 +57,7 @@ const App = () => {
   const handleDelete = (blog) => {
     blogService.remove(blog).then(() => {
       notifyWith(`${blog.title} deleted`)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+      setBlogs(prevBlogs => prevBlogs.filter(b => b.id !== blog.id))
     })
       .catch((error) => {
         if (error.response.status === 403) {
