@@ -1,10 +1,19 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, logout, createBlog, getBlogListSection } = require('./helper')
 
-import { loginWith, createBlog } from './helper'
 describe('bloglist app', () => {
+
+  let blogListSection
+  let blogElement
+  const testBlog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'https://test.com'
+  }
+  
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
+    await request.post('/api/testing/reset')
+    await request.post('/api/users', {
       data: {
         username: 'mluukkai',
         password: 'salainen',
@@ -12,7 +21,7 @@ describe('bloglist app', () => {
       }
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('login form is shown', async ({ page }) => {
@@ -39,9 +48,9 @@ describe('bloglist app', () => {
     })
 
     test('a new blog can be created and is listed in the blog list', async ({ page }) => {
-      await createBlog(page, 'Test Blog', 'Test Author', 'https://test.com')
+      await createBlog(page, testBlog.title, testBlog.author, testBlog.url)
 
-      const blogListSection = page.getByRole('heading', { name: 'all blogs' }).locator('..')
+      blogListSection = await getBlogListSection(page)
       await expect(blogListSection.getByText('Test Blog')).toBeVisible()
       await expect(blogListSection.getByText(/Test Author/)).toBeVisible()
     })
@@ -50,15 +59,44 @@ describe('bloglist app', () => {
   describe('after a blog is created', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'mluukkai', 'salainen')
-      await createBlog(page, 'Test Blog', 'Test Author', 'https://test.com')
+      await createBlog(page, testBlog.title, testBlog.author, testBlog.url)
     })
 
     test('a blog can be liked', async ({ page }) => {
-      const blogElement = page.getByText('Test Blog').locator('..')
-      
+      blogListSection = await getBlogListSection(page)
+      blogElement = blogListSection.getByText(testBlog.title).locator('..')
+
       await blogElement.getByRole('button', { name: 'view' }).click()
       await blogElement.getByRole('button', { name: 'like' }).click()
-      await expect(blogElement.getByText('likes: 1')).toBeVisible()
+
+      await expect(blogListSection.getByText('likes: 1')).toBeVisible()
+    })
+
+    test('user who added the blog can delete it', async ({ page }) => {
+      blogListSection = await getBlogListSection(page)
+      blogElement = blogListSection.getByText(testBlog.title).locator('..')
+
+      await blogElement.getByRole('button', { name: 'view' }).click()
+      page.once('dialog', dialog => dialog.accept())
+      await blogElement.getByRole('button', { name: 'delete' }).click()
+
+      await expect(blogListSection.getByText(testBlog.title)).not.toBeVisible()
+    })
+
+    test('only the user who added the blog sees the delete button', async ({ page, request }) => {
+      await logout(page)
+
+      await request.post('/api/users', {
+        data: { username: 'otheruser', password: 'secret', name: 'Other User' }
+      })
+      await loginWith(page, 'otheruser', 'secret')
+
+      blogListSection = await getBlogListSection(page)
+      blogElement = blogListSection.getByText(testBlog.title).locator('..')
+
+      await blogElement.getByRole('button', { name: 'view' }).click()
+
+      await expect(blogElement.getByRole('button', { name: 'delete' })).not.toBeVisible()
     })
   })
 })

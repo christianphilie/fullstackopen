@@ -5,6 +5,10 @@ const loginWith = async (page, username, password)  => {
   await page.getByRole('button', { name: 'login' }).click()
 }
 
+const logout = async (page) => {
+  await page.getByRole('button', { name: 'logout' }).click()
+}
+
 const createBlog = async (page, title, author, url) => {
   await page.getByRole('button', { name: 'create new blog' }).click()
   await page.getByLabel('title').fill(title)
@@ -13,4 +17,8 @@ const createBlog = async (page, title, author, url) => {
   await page.getByRole('button', { name: 'create' }).click()
 }
 
-export { loginWith, createBlog }
+const getBlogListSection = async (page) => {
+  return page.getByRole('heading', { name: 'all blogs' }).locator('..')
+}
+
+module.exports = { loginWith, logout, createBlog, getBlogListSection }
