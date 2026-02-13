@@ -6,8 +6,23 @@ const getAll = async () => {
   if (!response.ok) {
     throw new Error('Failed to fetch anecdotes')
   }
-  
+
   return await response.json()
 }
 
-export default { getAll }
+const create = async (anecdote) => {
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: anecdote, votes: 0 }),
+  }
+  const response = await fetch(baseUrl, options)
+
+  if (!response.ok) {
+    throw new Error('Failed to create anecdote')
+  }
+
+  return await response.json()
+}
+
+export default { getAll, create }

@@ -25,7 +25,7 @@ const AnecdoteList = () => {
           <li key={anecdote.id} style={{ marginBottom: 10 }}>
             <div>{anecdote.content}</div>
             <div>
-              has {anecdote.votes} <button onClick={() => vote(anecdote.id, anecdote.content)}>vote</button>
+              votes: {anecdote.votes} <button onClick={() => vote(anecdote.id, anecdote.content)}>vote</button>
             </div>
           </li>
         ))}
