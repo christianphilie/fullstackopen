@@ -5,8 +5,6 @@ const filterSlice = createSlice({
   initialState: '',
   reducers: {
     setFilter(state, action) {
-      console.log('state now: ', state)
-      console.log('action', action)
       return action.payload ?? state
     }
   }
