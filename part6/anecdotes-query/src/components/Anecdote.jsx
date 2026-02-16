@@ -1,8 +1,12 @@
+import { useContext } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateAnecdote, deleteAnecdote } from '../requests'
 
+import NotificationContext from '../NotificationContext'
+
 const Anecdote = ({ anecdote }) => {
   const queryClient = useQueryClient()
+  const { showNotification } = useContext(NotificationContext)
 
   const updateAnecdoteMutation = useMutation({
     mutationFn: updateAnecdote,
@@ -12,6 +16,7 @@ const Anecdote = ({ anecdote }) => {
         ['anecdotes'], 
         anecdotes.map(a => a.id === updatedAnecdote.id ? updatedAnecdote : a)
       )
+      showNotification(`you voted for '${anecdote.content}'`)
     }
   })
 
@@ -20,6 +25,7 @@ const Anecdote = ({ anecdote }) => {
       ...anecdote, 
       votes: anecdote.votes + 1 
     })
+    
   }
 
   const deleteAnecdoteMutation = useMutation({
