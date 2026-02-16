@@ -16,15 +16,18 @@ const AnecdoteForm = () => {
         anecdotes.concat(newAnecdote)
       )
       showNotification(`a new anecdote '${newAnecdote.content}' created!`)
+    },
+    onError: (error) => {
+      showNotification(error.message)
     }
   })
 
-  const onCreate = (event) => {
+  const onCreate = async (event) => {
     event.preventDefault()
 
     const content = event.target.anecdote.value
-    newAnecdoteMutation.mutate(content)
-
+    await newAnecdoteMutation.mutateAsync(content)
+    
     event.target.anecdote.value = ''
   }
 
