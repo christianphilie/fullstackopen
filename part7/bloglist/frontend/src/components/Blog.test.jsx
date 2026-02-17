@@ -15,8 +15,8 @@ describe('<Blog />', () => {
     user: {
       id: '123',
       name: 'Test User',
-      username: 'testuser'
-    }
+      username: 'testuser',
+    },
   }
 
   const mockUser = { id: '123' }
@@ -25,7 +25,7 @@ describe('<Blog />', () => {
     blog: mockBlog,
     user: mockUser,
     handleLike: vi.fn(),
-    handleDelete: vi.fn()
+    handleDelete: vi.fn(),
   }
 
   test('renders blog title and author but not url and likes by default', () => {

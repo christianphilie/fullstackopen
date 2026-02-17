@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import BlogCreateForm from './BlogCreateForm'
 
@@ -18,6 +18,10 @@ describe('<BlogCreateForm />', () => {
     const submitButton = screen.getByText('create')
     await userEvent.click(submitButton)
 
-    expect(createBlog).toHaveBeenCalledWith({ title: 'Test Blog', author: 'Test Author', url: 'https://test.com' })
+    expect(createBlog).toHaveBeenCalledWith({
+      title: 'Test Blog',
+      author: 'Test Author',
+      url: 'https://test.com',
+    })
   })
 })

@@ -12,7 +12,7 @@ const api = supertest(app)
 const testUser = {
   name: 'Test User',
   username: 'testuser',
-  password: 'password123'
+  password: 'password123',
 }
 
 let token
@@ -30,21 +30,17 @@ describe('when there are initially some blogs saved', () => {
 
   beforeEach(async () => {
     await Blog.deleteMany({})
-    await Blog.insertMany(
-      helper.initialBlogs.map(blog => ({ ...blog, user: userId }))
-    )
+    await Blog.insertMany(helper.initialBlogs.map((blog) => ({ ...blog, user: userId })))
   })
 
   test('right amount of blogs are returned', async () => {
-    const result = await api
-      .get('/api/blogs')
-      .set({ Authorization: `Bearer ${token}` })
+    const result = await api.get('/api/blogs').set({ Authorization: `Bearer ${token}` })
     assert.strictEqual(result.body.length, helper.initialBlogs.length)
   })
 
   test('blogs has id attribute', async () => {
     const blogs = await helper.blogsInDb()
-    blogs.forEach(blog => assert.ok(blog.id, 'Blog is missing id attribute'))
+    blogs.forEach((blog) => assert.ok(blog.id, 'Blog is missing id attribute'))
   })
 
   describe('when adding a new blog', () => {
@@ -53,7 +49,7 @@ describe('when there are initially some blogs saved', () => {
         title: 'Testing Blog API',
         author: 'Mark Markkanen',
         url: 'https://testurl.com/',
-        likes: 5
+        likes: 5,
       }
 
       await api
@@ -66,7 +62,7 @@ describe('when there are initially some blogs saved', () => {
       const blogsAtEnd = await helper.blogsInDb()
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-      const titles = blogsAtEnd.map(blog => blog.title)
+      const titles = blogsAtEnd.map((blog) => blog.title)
       assert(titles.includes('Testing Blog API'))
     })
 
@@ -74,7 +70,7 @@ describe('when there are initially some blogs saved', () => {
       const newBlog = {
         title: 'Testing Blog API',
         author: 'Mark Markkanen',
-        url: 'https://testurl.com/'
+        url: 'https://testurl.com/',
       }
 
       await api
@@ -85,9 +81,7 @@ describe('when there are initially some blogs saved', () => {
         .expect('Content-Type', /application\/json/)
 
       const blogsAtEnd = await helper.blogsInDb()
-      const addedBlog = blogsAtEnd.find(
-        blog => blog.title === 'Testing Blog API'
-      )
+      const addedBlog = blogsAtEnd.find((blog) => blog.title === 'Testing Blog API')
 
       assert.strictEqual(addedBlog.likes, 0)
     })
@@ -97,7 +91,7 @@ describe('when there are initially some blogs saved', () => {
         title: 'Testing Blog API',
         author: 'Mark Markkanen',
         url: 'https://testurl.com/',
-        likes: 5
+        likes: 5,
       }
 
       await api
@@ -109,7 +103,7 @@ describe('when there are initially some blogs saved', () => {
       const blogsAtEnd = await helper.blogsInDb()
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 
-      const titles = blogsAtEnd.map(blog => blog.title)
+      const titles = blogsAtEnd.map((blog) => blog.title)
       assert(!titles.includes('Testing Blog API'))
     })
 
@@ -117,7 +111,7 @@ describe('when there are initially some blogs saved', () => {
       const newBlog = {
         author: 'Mark Markkanen',
         url: 'https://testurl.com/',
-        likes: 5
+        likes: 5,
       }
 
       await api
@@ -131,7 +125,7 @@ describe('when there are initially some blogs saved', () => {
       const newBlog = {
         title: 'Testing Blog API',
         author: 'Mark Markkanen',
-        likes: 5
+        likes: 5,
       }
 
       await api
@@ -144,7 +138,7 @@ describe('when there are initially some blogs saved', () => {
 
   describe('deletion of a blog', () => {
     test('succeeds with status code 204 if id is valid', async () => {
-      blogsAtStart = await helper.blogsInDb()
+      const blogsAtStart = await helper.blogsInDb()
       const blogToDelete = blogsAtStart[0]
 
       await api
@@ -153,7 +147,7 @@ describe('when there are initially some blogs saved', () => {
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
-      const titles = blogsAtEnd.map(b => b.title)
+      const titles = blogsAtEnd.map((b) => b.title)
 
       assert(!titles.includes(blogToDelete.title))
       assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
@@ -169,7 +163,7 @@ describe('when there are initially some blogs saved', () => {
         title: 'Updated Title',
         author: 'Updated Author',
         url: 'Updated url',
-        likes: blogToUpdate.likes + 1
+        likes: blogToUpdate.likes + 1,
       }
 
       await api

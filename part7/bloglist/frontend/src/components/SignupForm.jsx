@@ -5,7 +5,7 @@ const SignupForm = ({
   setUsername,
   setName,
   setPassword,
-  handleSignup
+  handleSignup,
 }) => {
   return (
     <>

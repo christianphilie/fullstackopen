@@ -32,9 +32,10 @@ const App = () => {
   }
 
   const addBlog = (blog) => {
-    blogService.create(blog)
+    blogService
+      .create(blog)
       .then((createdBlog) => {
-        setBlogs(prevBlogs => prevBlogs.concat(createdBlog))
+        setBlogs((prevBlogs) => prevBlogs.concat(createdBlog))
         blogFormRef.current.toggleVisibility()
         notifyWith(`${createdBlog.title} by ${createdBlog.author} created`)
       })
@@ -45,9 +46,11 @@ const App = () => {
   }
 
   const handleLike = (blog) => {
-    blogService.like(blog).then(updatedBlog => {
-      setBlogs(prevBlogs => prevBlogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
-    })
+    blogService
+      .like(blog)
+      .then((updatedBlog) => {
+        setBlogs((prevBlogs) => prevBlogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)))
+      })
       .catch((error) => {
         console.log('error liking blog', error)
         notifyWith('Failed to like blog', true)
@@ -55,10 +58,12 @@ const App = () => {
   }
 
   const handleDelete = (blog) => {
-    blogService.remove(blog).then(() => {
-      notifyWith(`${blog.title} deleted`)
-      setBlogs(prevBlogs => prevBlogs.filter(b => b.id !== blog.id))
-    })
+    blogService
+      .remove(blog)
+      .then(() => {
+        notifyWith(`${blog.title} deleted`)
+        setBlogs((prevBlogs) => prevBlogs.filter((b) => b.id !== blog.id))
+      })
       .catch((error) => {
         if (error.response.status === 403) {
           console.log('user not authorized to delete blog', error)
@@ -113,9 +118,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -160,7 +163,9 @@ const App = () => {
         </>
       ) : (
         <>
-          <p>{user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button></p>
+          <p>
+            {user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button>
+          </p>
           <Togglable buttonLabel="create new blog" ref={blogFormRef}>
             <BlogCreateForm createBlog={addBlog} />
           </Togglable>
