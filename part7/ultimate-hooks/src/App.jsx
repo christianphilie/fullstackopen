@@ -18,14 +18,27 @@ const useField = (type) => {
 const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
 
-  // ...
+  useEffect(() => {
+    axios.get(baseUrl).then(response => {
+      setResources(response.data)
+    })
+  }, [])
 
   const create = (resource) => {
-    // ...
+    axios.post(baseUrl, resource).then(response => {
+      setResources(resources.concat(response.data))
+    })
+  }
+
+  const remove = (id) => {
+    axios.delete(`${baseUrl}/${id}`).then(response => {
+      setResources(resources.filter(resource => resource.id !== id))
+    })
   }
 
   const service = {
-    create
+    create, 
+    remove
   }
 
   return [
@@ -58,7 +71,12 @@ const App = () => {
         <input {...content} />
         <button>create</button>
       </form>
-      {notes.map(n => <p key={n.id}>{n.content}</p>)}
+      {notes.map(n => 
+        <p key={n.id}>
+          {n.content} 
+          <button onClick={() => noteService.remove(n.id)}>X</button>
+        </p>
+      )}
 
       <h2>persons</h2>
       <form onSubmit={handlePersonSubmit}>
@@ -66,7 +84,12 @@ const App = () => {
         number <input {...number} />
         <button>create</button>
       </form>
-      {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
+      {persons.map(n => 
+        <p key={n.id}>
+          {n.name} {n.number} 
+          <button onClick={() => personService.remove(n.id)}>X</button>
+        </p>
+      )}
     </div>
   )
 }
