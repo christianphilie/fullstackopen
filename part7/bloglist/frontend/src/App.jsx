@@ -10,10 +10,11 @@ import BlogList from './components/BlogList'
 import BlogCreateForm from './components/BlogCreateForm'
 
 import Notification from './components/Notification'
+import { useNotification } from './hooks/useNotification'
 import Togglable from './components/Togglable'
 
 const App = () => {
-  const [notification, setNotification] = useState({ message: null })
+  const { notification, notifyWith } = useNotification()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -23,13 +24,6 @@ const App = () => {
 
   const blogFormRef = useRef()
   const [blogs, setBlogs] = useState([])
-
-  const notifyWith = (message, isError = false) => {
-    setNotification({ message, isError })
-    setTimeout(() => {
-      setNotification({ message: null })
-    }, 5000)
-  }
 
   const addBlog = (blog) => {
     blogService
@@ -50,6 +44,7 @@ const App = () => {
       .like(blog)
       .then((updatedBlog) => {
         setBlogs((prevBlogs) => prevBlogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)))
+        notifyWith(`liked blog ${updatedBlog.title}`)
       })
       .catch((error) => {
         console.log('error liking blog', error)
