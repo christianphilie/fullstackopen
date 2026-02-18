@@ -26,21 +26,34 @@ const Comments = ({ blog }) => {
   }
 
   return (
-    <>
-      <form onSubmit={handleComment}>
-        <input type="text" value={comment} onChange={(event) => setComment(event.target.value)} />
-        <button type="submit">add comment</button>
+    <div className="space-y-3">
+      <form onSubmit={handleComment} className="flex gap-2">
+        <input
+          type="text"
+          value={comment}
+          onChange={(event) => setComment(event.target.value)}
+          className="form-input flex-1"
+          placeholder="Add a comment..."
+        />
+        <button type="submit" className="btn-secondary text-xs">
+          Add
+        </button>
       </form>
       {blog.comments && blog.comments.length > 0 ? (
-        <ul>
+        <ul className="text-sm">
           {blog.comments.map((comment) => (
-            <li key={comment}>{comment}</li>
+            <li
+              key={comment}
+              className="py-2 border-b border-slate-100 last:border-0 text-slate-700"
+            >
+              {comment}
+            </li>
           ))}
         </ul>
       ) : (
-        <p>no comments yet</p>
+        <p className="text-sm text-slate-400">No comments yet</p>
       )}
-    </>
+    </div>
   )
 }
 

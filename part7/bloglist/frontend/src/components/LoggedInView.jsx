@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useUsers } from '../hooks/useUsers'
 
 import Menu from './Menu'
+import Notification from './Notification'
 import BlogList from './BlogList'
 import BlogDetail from './BlogDetail'
 import BlogCreateForm from './BlogCreateForm'
@@ -19,7 +20,7 @@ import User from './User'
 const LoggedInView = () => {
   const { blogs, createBlog, likeBlog, deleteBlog } = useBlogs()
   const { user } = useUser()
-  const { notifyWith } = useNotification()
+  const { notification, notifyWith } = useNotification()
   const { handleLogout } = useAuth()
 
   const navigate = useNavigate()
@@ -78,12 +79,13 @@ const LoggedInView = () => {
   return (
     <>
       <Menu loggedInUser={user} handleLogout={handleLogout} />
+      <Notification notification={notification} />
       <Routes>
         <Route
           path="/"
           element={
             <BlogList blogs={blogs}>
-              <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+              <Togglable buttonLabel="Add Blog" ref={blogFormRef}>
                 <BlogCreateForm createBlog={addBlog} />
               </Togglable>
             </BlogList>

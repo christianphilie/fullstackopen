@@ -24,8 +24,14 @@ const App = () => {
 
   return (
     <>
-      <Notification notification={notification} />
-      {user ? <LoggedInView /> : <AuthView />}
+      {user ? (
+        <LoggedInView />
+      ) : (
+        <>
+          <Notification notification={notification} />
+          <AuthView />
+        </>
+      )}
     </>
   )
 }

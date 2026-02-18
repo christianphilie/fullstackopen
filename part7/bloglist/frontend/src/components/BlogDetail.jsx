@@ -13,39 +13,50 @@ const BlogDetail = ({ blog, handleLike, handleDelete, user }) => {
 
   return (
     blog && (
-      <>
-        <h2>{blog.title}</h2>
-        <h3>by {blog.author}</h3>
-        <p>
-          url:{' '}
-          <span className="blog-url">
-            <a href={blog.url} target="_blank" rel="noopener noreferrer">
-              {blog.url}
-            </a>
-          </span>
-          <br />
-          likes:{' '}
-          <span className="blog-likes">
-            {blog.likes}{' '}
-            <button className="blog-like-button" onClick={onLike}>
-              like
+      <div className="container-main">
+        <div className="card">
+          <h1>{blog.title}</h1>
+          <p className="text-sm text-slate-500 mb-6">by {blog.author}</p>
+
+          <div className="space-y-2 text-sm mb-6">
+            <div className="flex gap-3 py-2 border-b border-slate-100">
+              <span className="w-20 text-slate-500 shrink-0">URL</span>
+              <a
+                href={blog.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate hover:underline"
+              >
+                {blog.url}
+              </a>
+            </div>
+            <div className="flex gap-3 py-2 border-b border-slate-100 items-center">
+              <span className="w-20 text-slate-500 shrink-0">Likes</span>
+              <span className="font-medium">{blog.likes}</span>
+              <button className="btn-secondary ml-2 py-1 text-xs" onClick={onLike}>
+                Like
+              </button>
+            </div>
+            <div className="flex gap-3 py-2">
+              <span className="w-20 text-slate-500 shrink-0">Added by</span>
+              <span>
+                {blog.user.name} (@{blog.user.username})
+              </span>
+            </div>
+          </div>
+
+          {blog.user.id === user.id && (
+            <button className="btn-danger text-xs py-1.5 mb-6" onClick={onDelete}>
+              Delete
             </button>
-          </span>
-          <br />
-          added by:{' '}
-          <span className="blog-added-by">
-            {blog.user.name} (@{blog.user.username})
-          </span>
-          <br />
-        </p>
-        {blog.user.id === user.id && (
-          <button className="blog-delete-button" onClick={onDelete}>
-            delete
-          </button>
-        )}
-        <h3>comments</h3>
-        <Comments blog={blog} />
-      </>
+          )}
+
+          <div className="pt-6 border-t border-slate-100">
+            <h2 className="mb-4">Comments</h2>
+            <Comments blog={blog} />
+          </div>
+        </div>
+      </div>
     )
   )
 }

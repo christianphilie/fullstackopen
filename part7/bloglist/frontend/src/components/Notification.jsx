@@ -5,19 +5,17 @@ const Notification = ({ notification }) => {
     return null
   }
 
-  const style = {
-    color: isError ? 'red' : 'green',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  }
-
   return (
-    <div className={isError ? 'error' : 'notification'} style={style}>
-      {message}
+    <div className="container-main pb-0">
+      <div
+        className={`text-sm px-4 py-3 rounded-md border mb-2 ${
+          isError
+            ? 'border-red-200 bg-red-50 text-red-700'
+            : 'border-slate-200 bg-slate-50 text-slate-700'
+        }`}
+      >
+        {message}
+      </div>
     </div>
   )
 }

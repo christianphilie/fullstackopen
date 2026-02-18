@@ -12,34 +12,38 @@ const LoginForm = ({ handleLogin }) => {
   }
 
   return (
-    <>
-      <h2>log in to application</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>
-            username
+    <div className="container-main">
+      <div className="max-w-md mx-auto mt-12">
+        <h1 className="text-center mb-8">Login</h1>
+        <form onSubmit={onSubmit} className="card">
+          <div className="form-group">
+            <label className="form-label">Username</label>
             <input
               type="text"
               value={username}
               name="username"
               onChange={({ target }) => setUsername(target.value)}
+              className="form-input"
+              placeholder="Enter your username"
             />
-          </label>
-        </div>
-        <div>
-          <label>
-            password
+          </div>
+          <div className="form-group">
+            <label className="form-label">Password</label>
             <input
               type="password"
               value={password}
               name="password"
               onChange={({ target }) => setPassword(target.value)}
+              className="form-input"
+              placeholder="Enter your password"
             />
-          </label>
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </>
+          </div>
+          <button type="submit" className="btn-primary w-full">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }
 

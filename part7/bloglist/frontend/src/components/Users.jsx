@@ -5,28 +5,34 @@ const Users = () => {
   const { users } = useUsers()
 
   return (
-    <div>
-      <h2>all users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>
-                  {user.name} (@{user.username})
-                </Link>
-              </td>
-              <td>{user.blogs.length}</td>
+    <div className="container-main">
+      <h1 className="mb-6">All Users</h1>
+      <div className="card">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="text-left pb-3 font-medium text-slate-500">User</th>
+              <th className="text-left pb-3 font-medium text-slate-500">Blogs</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr
+                key={user.id}
+                className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors"
+              >
+                <td className="py-3">
+                  <Link to={`/users/${user.id}`} className="font-medium hover:underline">
+                    {user.name}
+                  </Link>
+                  <span className="text-slate-400 ml-1.5">@{user.username}</span>
+                </td>
+                <td className="py-3 text-slate-600">{user.blogs.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
