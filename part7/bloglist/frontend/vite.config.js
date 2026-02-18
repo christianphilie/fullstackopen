@@ -1,5 +1,8 @@
+/* global process */
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+const backendPort = process.env.BACKEND_PORT || 3003
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -7,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3003',
+        target: `http://localhost:${backendPort}`,
         changeOrigin: true,
       },
     },

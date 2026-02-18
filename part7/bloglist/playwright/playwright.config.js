@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Read environment variables from file.
@@ -12,6 +12,9 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
+const testBackendPort = 3004
+const testFrontendPort = 5174
+
 export default defineConfig({
   testDir: './tests',
   /* Reduce timeout to 3 seconds */
@@ -30,7 +33,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: `http://localhost:${testFrontendPort}`,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -77,19 +80,18 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'npm run start:test',
+      command: `PORT=${testBackendPort} npm run start:test`,
       cwd: '../backend',
-      url: 'http://localhost:3003/api/blogs',
-      reuseExistingServer: !process.env.CI,
+      url: `http://localhost:${testBackendPort}/api/blogs`,
+      reuseExistingServer: false,
       timeout: 15000,
     },
     {
-      command: 'npm run dev',
+      command: `BACKEND_PORT=${testBackendPort} npm run dev -- --port ${testFrontendPort}`,
       cwd: '../frontend',
-      url: 'http://localhost:5173',
-      reuseExistingServer: !process.env.CI,
+      url: `http://localhost:${testFrontendPort}`,
+      reuseExistingServer: false,
       timeout: 15000,
     },
   ],
-});
-
+})
