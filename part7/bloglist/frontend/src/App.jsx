@@ -11,10 +11,12 @@ import BlogCreateForm from './components/BlogCreateForm'
 
 import Notification from './components/Notification'
 import { useNotification } from './hooks/useNotification'
+import { useBlogs } from './hooks/useBlogs'
 import Togglable from './components/Togglable'
 
 const App = () => {
   const { notification, notifyWith } = useNotification()
+  const { blogs, createBlog, likeBlog, deleteBlog } = useBlogs()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -23,43 +25,38 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
-  const [blogs, setBlogs] = useState([])
 
   const addBlog = (blog) => {
-    blogService
-      .create(blog)
-      .then((createdBlog) => {
-        setBlogs((prevBlogs) => prevBlogs.concat(createdBlog))
+    createBlog(blog, {
+      onSuccess: (createdBlog) => {
         blogFormRef.current.toggleVisibility()
         notifyWith(`${createdBlog.title} by ${createdBlog.author} created`)
-      })
-      .catch((error) => {
+      },
+      onError: (error) => {
         console.log('error creating blog', error)
         notifyWith('Failed to create blog', true)
-      })
+      },
+    })
   }
 
   const handleLike = (blog) => {
-    blogService
-      .like(blog)
-      .then((updatedBlog) => {
-        setBlogs((prevBlogs) => prevBlogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)))
+    likeBlog(blog, {
+      onSuccess: (updatedBlog) => {
         notifyWith(`liked blog ${updatedBlog.title}`)
-      })
-      .catch((error) => {
+      },
+      onError: (error) => {
         console.log('error liking blog', error)
         notifyWith('Failed to like blog', true)
-      })
+      },
+    })
   }
 
   const handleDelete = (blog) => {
-    blogService
-      .remove(blog)
-      .then(() => {
+    deleteBlog(blog, {
+      onSuccess: () => {
         notifyWith(`${blog.title} deleted`)
-        setBlogs((prevBlogs) => prevBlogs.filter((b) => b.id !== blog.id))
-      })
-      .catch((error) => {
+      },
+      onError: (error) => {
         if (error.response.status === 403) {
           console.log('user not authorized to delete blog', error)
           notifyWith('You are not authorized to delete this blog', true)
@@ -67,7 +64,8 @@ const App = () => {
           console.log('error deleting blog', error)
           notifyWith('Failed to delete blog', true)
         }
-      })
+      },
+    })
   }
 
   const handleLogin = (event) => {
@@ -111,10 +109,6 @@ const App = () => {
     window.localStorage.removeItem('loggedInBloglistUser')
     setUser(null)
   }
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
 
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem('loggedInBloglistUser')
