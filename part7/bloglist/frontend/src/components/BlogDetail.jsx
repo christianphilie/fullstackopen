@@ -1,3 +1,5 @@
+import Comments from './Comments'
+
 const BlogDetail = ({ blog, handleLike, handleDelete, user }) => {
   const onLike = () => {
     handleLike(blog)
@@ -41,6 +43,8 @@ const BlogDetail = ({ blog, handleLike, handleDelete, user }) => {
             delete
           </button>
         )}
+        <h3>comments</h3>
+        <Comments blog={blog} />
       </>
     )
   )

@@ -74,7 +74,21 @@ blogsRouter.post('/:id/like', userExtractor, async (request, response) => {
   blog.likes = blog.likes + 1
 
   await blog.save()
-  response.json(await blog.withUser())
+  response.status(201).json(await blog.withUser())
+})
+
+blogsRouter.post('/:id/comment', userExtractor, async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  const comment = request.body.comment
+
+  if (!blog || !comment) {
+    return response.status(404).end()
+  }
+
+  blog.comments.push(comment)
+
+  await blog.save()
+  response.status(201).json(await blog.withUser())
 })
 
 module.exports = blogsRouter

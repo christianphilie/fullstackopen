@@ -25,6 +25,14 @@ export const useBlogs = () => {
     },
   })
 
+  const addCommentMutation = useMutation({
+    mutationFn: ({ blog, comment }) => blogService.addComment(blog, comment),
+    onSuccess: (updatedBlog) => {
+      queryClient.setQueryData(['blogs'], (oldBlogs) =>
+        oldBlogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b))
+      )
+    },
+  })
   const deleteMutation = useMutation({
     mutationFn: (blog) => blogService.remove(blog),
     onSuccess: (_, deletedBlog) => {
@@ -40,6 +48,7 @@ export const useBlogs = () => {
     error: blogsQuery.error,
     createBlog: createMutation.mutate,
     likeBlog: likeMutation.mutate,
+    addComment: addCommentMutation.mutate,
     deleteBlog: deleteMutation.mutate,
   }
 }
