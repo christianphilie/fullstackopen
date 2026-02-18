@@ -12,17 +12,18 @@ import BlogCreateForm from './components/BlogCreateForm'
 import Notification from './components/Notification'
 import { useNotification } from './hooks/useNotification'
 import { useBlogs } from './hooks/useBlogs'
+import { useUser } from './hooks/useUser'
 import Togglable from './components/Togglable'
 
 const App = () => {
   const { notification, notifyWith } = useNotification()
   const { blogs, createBlog, likeBlog, deleteBlog } = useBlogs()
+  const { user, setUser, logout } = useUser()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [showSignup, setShowSignup] = useState(false)
-  const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -107,7 +108,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBloglistUser')
-    setUser(null)
+    logout()
   }
 
   useEffect(() => {
@@ -117,7 +118,7 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [setUser])
 
   return (
     <>
