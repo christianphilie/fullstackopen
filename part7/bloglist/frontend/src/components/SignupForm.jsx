@@ -1,16 +1,33 @@
-const SignupForm = ({
-  username,
-  name,
-  password,
-  setUsername,
-  setName,
-  setPassword,
-  handleSignup,
-}) => {
+import { useState } from 'react'
+import { useNotification } from '../hooks/useNotification'
+
+const SignupForm = ({ handleSignup, onSuccess }) => {
+  const [username, setUsername] = useState('')
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const { notifyWith } = useNotification()
+
+  const onSubmit = (event) => {
+    event.preventDefault()
+    handleSignup(username, name, password)
+      .then(() => {
+        notifyWith('Account created successfully. Please log in.')
+        setUsername('')
+        setName('')
+        setPassword('')
+        onSuccess()
+      })
+      .catch((error) => {
+        console.log('error signing up', error)
+        const errorMessage = error.response?.data?.error || 'Failed to create account'
+        notifyWith(errorMessage, true)
+      })
+  }
+
   return (
     <>
       <h2>sign up for application</h2>
-      <form onSubmit={handleSignup}>
+      <form onSubmit={onSubmit}>
         <div>
           <label>
             username
