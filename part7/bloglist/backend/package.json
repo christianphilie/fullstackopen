@@ -6,7 +6,7 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development node --watch index.js",
     "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
-    "build:ui": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend",
+    "build:ui": "cd ../frontend && npm run build && cd ../backend && rm -rf dist && cp -r ../frontend/dist .",
     "start:test": "cross-env NODE_ENV=test node --watch index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
