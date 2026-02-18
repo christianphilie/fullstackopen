@@ -1,16 +1,20 @@
 import { Link } from 'react-router-dom'
 
-const Menu = ({ style }) => {
+const Menu = ({ style, loggedInUserId }) => {
   const padding = {
-    paddingRight: 5,
+    paddingRight: 10,
   }
+
   return (
     <div style={style}>
       <Link style={padding} to="/">
-        blogs
+        all blogs
+      </Link>
+      <Link style={padding} to={`/users/${loggedInUserId}`}>
+        my blogs
       </Link>
       <Link style={padding} to="/users">
-        users
+        all users
       </Link>
     </div>
   )

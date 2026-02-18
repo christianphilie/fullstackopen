@@ -1,22 +1,29 @@
 import { useRef } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
+
 import { useBlogs } from '../hooks/useBlogs'
 import { useUser } from '../hooks/useUser'
 import { useNotification } from '../hooks/useNotification'
 import { useAuth } from '../hooks/useAuth'
+import { useUsers } from '../hooks/useUsers'
 
 import Menu from './Menu'
 import BlogList from './BlogList'
 import BlogCreateForm from './BlogCreateForm'
 import Togglable from './Togglable'
 import Users from './Users'
+import User from './User'
 
-const ProtectedRoutes = () => {
+const LoggedInView = () => {
   const { blogs, createBlog, likeBlog, deleteBlog } = useBlogs()
   const { user } = useUser()
   const { notifyWith } = useNotification()
   const { handleLogout } = useAuth()
   const blogFormRef = useRef()
+
+  const { users = [] } = useUsers()
+  const match = useMatch('/users/:id')
+  const currentUser = match ? users.find((user) => user.id === match.params.id) : user
 
   const addBlog = (blog) => {
     createBlog(blog, {
@@ -65,7 +72,7 @@ const ProtectedRoutes = () => {
       <p>
         {user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button>
       </p>
-      <Menu style={{ marginBottom: 30 }} />
+      <Menu style={{ marginBottom: 30 }} loggedInUserId={user.id} />
       <Routes>
         <Route
           path="/"
@@ -78,10 +85,10 @@ const ProtectedRoutes = () => {
           }
         />
         <Route path="/users" element={<Users />} />
-        {/* <Route path="/users/:id" element={<User />} /> */}
+        <Route path="/users/:id" element={<User user={currentUser} />} />
       </Routes>
     </>
   )
 }
 
-export default ProtectedRoutes
+export default LoggedInView

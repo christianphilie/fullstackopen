@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 
 import Notification from './components/Notification'
 import AuthView from './components/AuthView'
-import ProtectedRoutes from './components/ProtectedRoutes'
+import LoggedInView from './components/LoggedInView'
 
 import { useNotification } from './hooks/useNotification'
 import { useUser } from './hooks/useUser'
@@ -25,7 +25,7 @@ const App = () => {
   return (
     <>
       <Notification notification={notification} />
-      {user ? <ProtectedRoutes /> : <AuthView />}
+      {user ? <LoggedInView /> : <AuthView />}
     </>
   )
 }
