@@ -77,10 +77,7 @@ const LoggedInView = () => {
 
   return (
     <>
-      <p>
-        {user.name} logged in (@{user.username}) <button onClick={handleLogout}>logout</button>
-      </p>
-      <Menu style={{ marginBottom: 30 }} loggedInUserId={user.id} />
+      <Menu loggedInUser={user} handleLogout={handleLogout} />
       <Routes>
         <Route
           path="/"
