@@ -105,7 +105,7 @@ const typeDefs = /* GraphQL */ `
     authorCount: Int!
     bookCount: Int!
     allAuthors: [Author!]!
-    allBooks(author: String): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
   }
 `;
 
@@ -115,10 +115,18 @@ const resolvers = {
     bookCount: () => books.length,
     allAuthors: () => authors,
     allBooks: (root, args) => {
+      let booksToReturn = books;
       if (args.author) {
-        return books.filter((book) => book.author === args.author);
+        booksToReturn = booksToReturn.filter(
+          (book) => book.author === args.author,
+        );
       }
-      return books;
+      if (args.genre) {
+        booksToReturn = booksToReturn.filter((book) =>
+          book.genres.includes(args.genre),
+        );
+      }
+      return booksToReturn;
     },
   },
   Author: {
