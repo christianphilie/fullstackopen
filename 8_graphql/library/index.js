@@ -115,18 +115,11 @@ const resolvers = {
     bookCount: () => books.length,
     allAuthors: () => authors,
     allBooks: (root, args) => {
-      let booksToReturn = books;
-      if (args.author) {
-        booksToReturn = booksToReturn.filter(
-          (book) => book.author === args.author,
-        );
-      }
-      if (args.genre) {
-        booksToReturn = booksToReturn.filter((book) =>
-          book.genres.includes(args.genre),
-        );
-      }
-      return booksToReturn;
+      const matchesAuthor = (book) =>
+        !args.author || book.author === args.author;
+      const matchesGenre = (book) =>
+        !args.genre || book.genres.includes(args.genre);
+      return books.filter((book) => matchesAuthor(book) && matchesGenre(book));
     },
   },
   Author: {
