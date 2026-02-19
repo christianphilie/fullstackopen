@@ -33,3 +33,8 @@ The course covers modern full-stack JavaScript development — from building com
 - **[Part 5](./5_frontend-testing/)** – Testing React apps
 - **[Part 6](./6_state-management/)** – Advanced state management
 - **[Part 7](./7_advanced-react/)** – React router, custom hooks, styling apps with CSS and Webpack
+- **[Part 8](./8_graphql/)** – GraphQL and Apollo
+
+## Note on Claude Code 🤖
+
+I used [Claude Code](https://claude.ai/code) as a support tool throughout this course—for code reviews, debugging, and answering questions. All code is my own implementation.
